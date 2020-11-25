@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Logs\Logs;
+use App\Logs\LogsModel;
 use App\Models\SvodPackage;
 use App\Models\Videos;
 use App\Models\Viewers;
@@ -19,7 +21,7 @@ class VideoController extends Controller
      * @param  int $id
      * @return json
      */
-    public function showOneVideo($id)
+    public function showOneVideo($id, Request $request)
     {
 
         $Video = Videos::find($id);
@@ -64,7 +66,7 @@ class VideoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return json
      */
-    public function buyVideo(Request $request)
+    public function directAccess(Request $request)
     {
 
         $Video = Videos::find($request->id_video);
@@ -79,7 +81,15 @@ class VideoController extends Controller
                     \Auth::user()->directVideos()->save($Video, ['start_date' => $time_start->toDateTimeString(), 'end_date'=>$time_end->toDateTimeString()]);
                     return response()->json('Succes', 200);
                 } catch (Exception $e) {
-                    return response('Error when trying to Buy direct access to video (ID:'.$request->id_video.'):'.$e->getMessage(), 420);
+                    // it will be very similar in most cases so it would be good to add it to for example trait.
+                    $logModel = new LogsModel();
+                    $logModel->type = 'ERROR';
+                    $logModel->code = 'VIDEO_showOneVideo';
+                    $logModel->message = $e->getMessage();
+                    $logModel->request = $request;
+                    $logClass = new Logs();
+                    $logClass->writeLogs($logModel);
+                    return response('Error when trying to add direct access to video (ID:'.$request->id_video.')', 420);
                 }
             } else {
                 return response("you already have access to this video id:$request->id_video", 420);

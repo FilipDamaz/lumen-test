@@ -34,6 +34,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
 
     $router->get('video/{id}', ['uses' => 'VideoController@showOneVideo']);
     $router->post('video', ['uses' => 'VideoController@createNewVideo']);
-    $router->post('video/direct_access', ['uses' => 'VideoController@buyVideo']);
+    $router->post('video/direct_access', ['uses' => 'VideoController@directAccess']);
 
 });

@@ -26,7 +26,7 @@ class SvodPackageController extends Controller
      * @param  int $id
      * @return json
      */
-    public function showOneSvodPackages($id)
+    public function showOneSvodPackages($id,Request $request)
     {
         try {
             return response()->json(SvodPackage::where('is_active', true)->find($id));
